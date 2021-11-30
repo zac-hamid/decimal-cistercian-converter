@@ -21,8 +21,7 @@ def main():
 		result = math.floor(result // 10000)
 		cistercians.append(num_to_img(bg, imgs, remainder))
 
-	im = horizontal_stack(cistercians[::-1])
-	cv2.namedWindow('Cistercian Representation of ' + str(num_in), cv2.WINDOW_NORMAL)   
+	im = image_resize(horizontal_stack(cistercians[::-1]), height = 250)
 	cv2.imshow('Cistercian Representation of ' + str(num_in), im)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
@@ -55,6 +54,39 @@ def rotate_image(img, place):
 	elif (place == 4): # Thousands position
 		return cv2.flip(cv2.flip(img, 1), 0)
 	return img
+
+# Resize an image while maintaining aspect ratio (if either width or height are not specified)
+# Taken from: https://stackoverflow.com/a/44659589
+def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
+    # initialize the dimensions of the image to be resized and
+    # grab the image size
+    dim = None
+    (h, w) = image.shape[:2]
+
+    # if both the width and height are None, then return the
+    # original image
+    if width is None and height is None:
+        return image
+
+    # check to see if the width is None
+    if width is None:
+        # calculate the ratio of the height and construct the
+        # dimensions
+        r = height / float(h)
+        dim = (int(w * r), height)
+
+    # otherwise, the height is None
+    else:
+        # calculate the ratio of the width and construct the
+        # dimensions
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    # resize the image
+    resized = cv2.resize(image, dim, interpolation = inter)
+
+    # return the resized image
+    return resized
 
 
 # Load background, "stem", and numeral images used to construct the Cistercian numerals
